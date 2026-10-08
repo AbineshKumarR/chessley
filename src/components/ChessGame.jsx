@@ -407,13 +407,22 @@ export default function ChessGame() {
   }, []);
 
   // Bot move execution
-  const makeBotMove = useCallback(async () => {
-    if (game.isGameOver() || game.turn() !== effectiveBotColor || isLiveGameOver) {
+  const makeBotMove = useCallback(async (overrideGame, overrideBotColor) => {
+    const targetGame = overrideGame || game;
+    const targetBotColor = overrideBotColor || effectiveBotColor;
+    const currentFen = targetGame.fen();
+    const fenSide = currentFen.split(' ')[1] || targetGame.turn();
+    const gameTurn = targetGame.turn();
+    const shouldBotMove = !targetGame.isGameOver() && gameTurn === targetBotColor && !isLiveGameOver;
+
+    if (!shouldBotMove) {
+      console.log(`\n[Chess Debug]\nhumanColor=${effectivePlayerColor}\nbotColor=${targetBotColor}\nfen=${currentFen}\nfenSide=${fenSide}\ngameTurn=${gameTurn}\nshouldBotMove=${shouldBotMove}\nengineRequest=N/A\nengineResponse=N/A\nchessMove=N/A\nresultingFen=N/A\n`);
       return;
     }
 
     setIsBotThinking(true);
-    const botGameCopy = new Chess(game.fen());
+    const botConfig = BOTS[botId] || BOTS[DEFAULT_BOT_ID];
+    const botGameCopy = new Chess(currentFen);
 
     try {
       const bestMove = await findBestMove(botGameCopy, botId);
@@ -423,20 +432,25 @@ export default function ChessGame() {
           to: bestMove.to,
           promotion: bestMove.promotion || 'q'
         };
-        const moveResult = game.move(moveArg);
+
+        const moveResult = targetGame.move(moveArg);
+        const resultingFen = targetGame.fen();
+
+        console.log(`\n[Chess Debug]\nhumanColor=${effectivePlayerColor}\nbotColor=${targetBotColor}\nfen=${currentFen}\nfenSide=${fenSide}\ngameTurn=${gameTurn}\nshouldBotMove=${shouldBotMove}\nengineRequest=${bestMove.rawRequest || 'N/A'}\nengineResponse=${bestMove.rawResponse || 'N/A'}\nchessMove=${JSON.stringify(moveArg)}\nresultingFen=${resultingFen}\n`);
+
         if (moveResult) {
-          const updatedHistory = game.history({ verbose: true });
-          setGameFen(game.fen());
+          const updatedHistory = targetGame.history({ verbose: true });
+          setGameFen(resultingFen);
           setMoveHistory([...updatedHistory]);
           setLastMove({ from: bestMove.from, to: bestMove.to });
           setViewingPlyIndex(null);
-          handleSoundEffects(moveResult, game);
+          handleSoundEffects(moveResult, targetGame);
 
-          if (game.isGameOver()) {
-            if (game.isCheckmate()) {
-              setGameOverResult({ winner: effectiveBotColor, reason: 'by Checkmate' });
-              recordCompletedMatch(effectiveBotColor, 'Loss by Checkmate');
-            } else if (game.isStalemate()) {
+          if (targetGame.isGameOver()) {
+            if (targetGame.isCheckmate()) {
+              setGameOverResult({ winner: targetBotColor, reason: 'by Checkmate' });
+              recordCompletedMatch(targetBotColor, 'Loss by Checkmate');
+            } else if (targetGame.isStalemate()) {
               setGameOverResult({ winner: 'draw', reason: 'by Stalemate' });
               recordCompletedMatch('draw', 'Draw by Stalemate');
             } else {
@@ -448,11 +462,11 @@ export default function ChessGame() {
         }
       }
     } catch (err) {
-      console.error('Error executing bot move:', err);
+      console.error('[GAME BOT TURN ERROR]', err);
     } finally {
       setIsBotThinking(false);
     }
-  }, [game, botId, effectiveBotColor, handleSoundEffects, isLiveGameOver, recordCompletedMatch]);
+  }, [game, botId, effectiveBotColor, effectivePlayerColor, handleSoundEffects, isLiveGameOver, recordCompletedMatch]);
 
   // Human move execution
   const makeAMove = useCallback((move) => {
@@ -624,19 +638,9 @@ export default function ChessGame() {
 
     // If bot plays White, bot makes the first move
     if (overrideBotColor === 'w') {
-      setTimeout(async () => {
-        setIsBotThinking(true);
-        const botGameCopy = new Chess(newGame.fen());
-        const bestMove = await findBestMove(botGameCopy, botId);
-        if (bestMove) {
-          newGame.move({ from: bestMove.from, to: bestMove.to, promotion: bestMove.promotion || 'q' });
-          setGameFen(newGame.fen());
-          setMoveHistory([...newGame.history({ verbose: true })]);
-          setLastMove({ from: bestMove.from, to: bestMove.to });
-          playMove();
-        }
-        setIsBotThinking(false);
-      }, 400);
+      setTimeout(() => {
+        makeBotMove(newGame, 'w');
+      }, 300);
     }
   };
 

@@ -175,7 +175,7 @@ export default function ChessSidebar({
       </div>
 
       {/* Main Tab Content Body */}
-      <div className="flex-1 overflow-y-auto p-3.5 space-y-4">
+      <div className="flex-1 min-h-0 overflow-y-auto p-3.5 space-y-4">
         
         {/* TAB 1: PLAY */}
         {activeTab === 'play' && (
@@ -291,7 +291,7 @@ export default function ChessSidebar({
 
         {/* TAB 2: MOVES */}
         {activeTab === 'moves' && (
-          <div className="h-full flex flex-col">
+          <div className="h-full min-h-0 flex flex-col">
             <MoveHistory
               history={moveHistory}
               currentPlyIndex={currentPlyIndex}

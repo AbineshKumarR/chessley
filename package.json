@@ -37,6 +37,12 @@
       "dist/**/*",
       "electron/**/*"
     ],
+    "extraResources": [
+      {
+        "from": "native/engine.exe",
+        "to": "native/engine.exe"
+      }
+    ],
     "win": {
       "target": "nsis"
     }

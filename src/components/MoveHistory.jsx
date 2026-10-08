@@ -144,7 +144,7 @@ export default function MoveHistory({
 
   // --- DESKTOP 2-COLUMN TABLE & STEPPER ---
   return (
-    <div className="flex flex-col h-full bg-[#262522] border border-[#3d3b37] rounded-xl overflow-hidden text-[#e1dfda] select-none shadow-lg">
+    <div className="flex flex-col h-[600px] bg-[#262522] border border-[#3d3b37] rounded-xl overflow-hidden text-[#e1dfda] select-none shadow-lg">
       {/* 2-Column Header */}
       <div className="flex items-center px-4 py-2.5 bg-[#1f1e1b] border-b border-[#363431] text-xs font-extrabold text-zinc-400 uppercase tracking-wider">
         <span className="w-12">#</span>
@@ -155,7 +155,7 @@ export default function MoveHistory({
       {/* Scrollable Move Table (Expanded height with comfortable padding & readable text) */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto min-h-[300px] p-2 space-y-1 font-mono text-sm"
+        className="flex-1 overflow-y-auto min-h-0 p-2 space-y-1 font-mono text-sm"
       >
         {movePairs.length === 0 ? (
           <div className="flex items-center justify-center h-full min-h-[220px] text-xs text-[#8b8985] italic font-sans">

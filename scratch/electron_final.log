@@ -1,0 +1,12 @@
+
+[Main Process] Spawning C++ engine binary at: D:\Projects\Chess\native\engine.exe
+[Main Process] Subprocess Spawned. PID: 17344
+[1792:0910/233851.624:INFO:CONSOLE:3] "[STAGE C0: preload.js] Preload script loaded successfully with CommonJS require(). Exposing window.chessEngine.", source: D:\Projects\Chess\electron\preload.js (3)
+[1792:0910/233851.792:INFO:CONSOLE:2] "%cElectron Security Warning (Insecure Content-Security-Policy) font-weight: bold; This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: node:electron/js2c/sandbox_bundle (2)
